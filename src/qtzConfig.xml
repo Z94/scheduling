@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">  
+<beans>  
+	
+	
+    <!-- 
+        方式二：使用MethodInvokingJobDetailFactoryBean，任务类可以不实现Job接口，通过targetMethod指定调用方法 
+    -->  
+    <!-- 定义目标bean和bean中的方法 -->  
+    <bean id="myQtzJob" class="com.scheduling.MyQtzJob">  
+          
+    </bean>  
+      
+    <bean id="SpringQtzJobMethod"  
+        class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+        <property name="targetObject">  
+            <ref bean="myQtzJob" />  
+        </property>  
+        <property name="targetMethod">  <!-- 要执行的方法名称 -->  
+            <value>execute</value>  
+        </property>  
+    </bean>  
+  
+    <!-- ======================== 调度触发器 ======================== -->  
+    <bean id="CronTriggerBean" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+        <property name="jobDetail" ref="SpringQtzJobMethod"></property>  
+        <property name="cronExpression" value="0/5 * * * * ?"></property>  
+    </bean>  
+  
+    <!-- ======================== 调度工厂 ======================== -->  
+    <bean id="SpringJobSchedulerFactoryBean"  
+        class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
+        <property name="triggers">  
+            <list>  
+                <ref bean="CronTriggerBean" />  
+            </list>  
+        </property>  
+    </bean>  
+      
+</beans> 
